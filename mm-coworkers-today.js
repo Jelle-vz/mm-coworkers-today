@@ -11,7 +11,7 @@
  // TODO: JV: Change api/Json call to async call with succes callback
  // TODO: JV: Add refresh for every morning to check if project status changed
 
-Module.register("coworkers_today",{
+Module.register("mm-coworkers-today",{
 
 	// Default module config.
 	defaults: {
@@ -57,7 +57,7 @@ Module.register("coworkers_today",{
 
 	getStyles: function(){
 		return [
-			'coworkers_today.css'
+			'mm-coworkers-today.css'
 		]
 	},
 
@@ -66,7 +66,7 @@ Module.register("coworkers_today",{
 
 		function getJSON(url) {
 			let Httpreq = new XMLHttpRequest(); // a new request
-			
+
 		    Httpreq.open("GET", url, false);
 		    Httpreq.send(null);
 
