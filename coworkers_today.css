@@ -1,0 +1,12 @@
+ul li {
+    list-style: none;
+}
+
+ul li img {
+    border-radius:50%;
+    width: 20px;
+    height:auto;
+    position: relative;
+    margin-bottom: -3px;
+    margin-left: 5px;
+}
