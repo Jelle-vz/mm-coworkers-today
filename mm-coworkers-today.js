@@ -52,7 +52,19 @@ Module.register("mm-coworkers-today",{
 				apiToken:"66-aAdefGT7TsuVojq5e2nKKciXGnGYfrlgSpkXV4SD", //Ferry Brak
 				userId:"66"
 			}
-		]
+		],
+		getJSON:function(url) {
+			let Httpreq = new XMLHttpRequest();
+
+			Httpreq.open("GET", url, false);
+			Httpreq.send(null);
+
+			if (Httpreq.readyState == 4 && Httpreq.status == 200) {
+				return JSON.parse(Httpreq.responseText);
+			}
+
+			return `Something whent wrong with fetching ${url}`;
+		},
 	},
 
 	getStyles: function(){
@@ -61,34 +73,41 @@ Module.register("mm-coworkers-today",{
 		]
 	},
 
+	start: function(){
+		//Do something when module starts but dom not loaded
+	},
+
 	// Override dom generator.
 	getDom: function() {
 
-		function getJSON(url) {
-			let Httpreq = new XMLHttpRequest(); // a new request
-
-		    Httpreq.open("GET", url, false);
-		    Httpreq.send(null);
-
-		    return JSON.parse(Httpreq.responseText);
-		}
-
 		let wrapper = document.createElement("div");
+		wrapper.className = "small bright";
+
 		let apiUrl = this.config.apiUrl;
+		let getJSON = url => this.config.getJSON(url);
 
-		let list = this.config.data.reduce(function(result, item, index){
+		let fetchedUsers = this.config.data.map((item) => {
 			let user = item.userId ? getJSON(apiUrl + "&auth_api_token=" + item.apiToken + "&path_info=people/1/users/" + item.userId +"&format=json") : "No user data specified";
+			return {
+				name: user.short_display_name,
+				avatar: user.avatar.photo,
+				project:user.title
+			}
+		}).sort((a,b) => a.project < b.project ? -1 : a.project > b.project ? 1 : 0); //Sort by Alphabet
 
+		let list = fetchedUsers.reduce(function(result, item, index){
 			let template = `
-				<img src="${user.avatar.photo}" />
-				<span class='name'>${user.short_display_name}</span>
-				<span class='project'>(${user.title})</span>
-			`;
+				<li class='item'>
+					<span class='project'>${item.project}</span>
+					- <img src="${item.avatar}" />
+					<span class='name'>${item.name}</span>
 
-			return result + `<li class='item'>${template}</li>`;
+				</li>
+				`;
+			return result + template;
 		},"");
 
-		wrapper.className = "small bright";
+
 		wrapper.innerHTML = `<span class='normal medium'>Wij werken vandaag aan </span>
 							<ul class='item-list'>${list}</ul>`;
 
