@@ -95,7 +95,7 @@ Module.register("mm-coworkers-today",{
 			}
 		}).sort((a,b) => a.project < b.project ? -1 : a.project > b.project ? 1 : 0); //Sort by Alphabet
 
-		let list = fetchedUsers.reduce(function(result, item, index){
+		let list = fetchedUsers.reduce((result, item, index) => {
 			let template = `
 				<li class='item'>
 					<span class='project'>${item.project}</span>
