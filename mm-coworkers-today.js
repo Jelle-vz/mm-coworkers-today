@@ -68,7 +68,10 @@ Module.register("mm-coworkers-today",{
 				return result + listItem
 			},"");
 
-			wrapper.innerHTML = `<ul class="item-list">${list}</ul>`
+			wrapper.innerHTML = `
+				<span class='normal medium'>Vandaag werken wij aan</span><br/>
+				<ul class="item-list">${list}</ul>
+			`;
 		}
 
 		return wrapper;
