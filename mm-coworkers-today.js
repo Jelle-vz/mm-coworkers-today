@@ -15,32 +15,14 @@ Module.register("mm-coworkers-today",{
 
 	// Default module config.
 	defaults: {
-		data:[
-			{userId:"9"},
-			{userId:"6"},
-			{userId:"2"},
-			{userId:"17"},
-			{userId:"103"},
-			{userId:"13"},
-			{userId:"66"}
-		],
-		getJSON:function(url) {
-			let Httpreq = new XMLHttpRequest();
-
-			Httpreq.open("GET", url, false);
-			Httpreq.send(null);
-
-			if (Httpreq.readyState == 4 && Httpreq.status == 200) {
-				return JSON.parse(Httpreq.responseText);
-			}
-
-			return `Something whent wrong with fetching ${url}`;
-		},
 	},
 	getStyles: function(){
 		return [
 			'mm-coworkers-today.css'
 		]
+	},
+	getScripts: function() {
+		return ["axios"];
 	},
 	start: function(){
 		//Do something when module starts but dom not loaded
@@ -51,35 +33,43 @@ Module.register("mm-coworkers-today",{
 
 		let wrapper = document.createElement("div");
 			wrapper.className = "small bright";
+			wrapper.innerHTML = "<span class='loader'>Bezig met laden...</span>"
 
-		let apiUrl = this.config.apiUrl;
-		let apiToken = this.config.apiToken;
-		let getJSON = url => this.config.getJSON(url);
-
-		let fetchedUsers = this.config.data.map((item) => {
-			let user = item.userId ? getJSON(apiUrl + "&auth_api_token=" + apiToken + "&path_info=people/1/users/" + item.userId +"&format=json") : "No user data specified";
-			return {
-				name: user.short_display_name,
-				avatar: user.avatar.photo,
-				project:user.title
-			}
-		}).sort((a,b) => a.project < b.project ? -1 : a.project > b.project ? 1 : 0); //Sort by Alphabet
-
-		let list = fetchedUsers.reduce((result, item, index) => {
-			let template = `
-				<li class='item'>
-					<span class='project'>${item.project}</span>
-					- <img src="${item.avatar}" />
-					<span class='name'>${item.name}</span>
-
-				</li>
-				`;
-			return result + template;
-		},"");
+		let api = axios.create({
+		  baseURL: this.config.apiUrl,
+		  headers: {
+			  'Authorization': 'Bearer ' + this.config.apiToken
+		  }
+		});
 
 
-		wrapper.innerHTML = `<span class='normal medium'>Wij werken vandaag aan </span>
-							<ul class='item-list'>${list}</ul>`;
+		function getApiData() {
+			api.get('coworkers').then((response) => {
+				setCoworkersHtml(response);
+			}).catch((error) => {
+				console.error(error);
+			});
+		} getApiData();
+
+		setInterval(function(){
+			getApiData();
+		}, 3600000); //Get data every hour
+
+		let setCoworkersHtml = function(response){
+			let data = response.data.data.data;
+			let list = data.reduce(function(result, item){
+				let listItem = `
+					<li class='item'>
+						<span class='project'>${item.project}</span>
+						- <img src="${item.avatar}" />
+						<span class='name'>${item.name}</span>
+					</li>
+				`
+				return result + listItem
+			},"");
+
+			wrapper.innerHTML = `<ul class="item-list">${list}</ul>`
+		}
 
 		return wrapper;
 	}
