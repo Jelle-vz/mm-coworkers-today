@@ -10,3 +10,23 @@ ul li img {
     margin-bottom: -3px;
     margin-left: 5px;
 }
+
+@keyframes loader {
+    0% {
+        transform:rotate(0deg);
+    }
+    100% {
+        transform:rotate(360deg);
+    }
+}
+
+.loader::before {
+    content:"";
+    display:inline-block;
+    width:15px;
+    height:15px;
+    background: white;
+    position: relative;
+    animation: loader 1s infinite;
+    margin-right:10px;
+}
