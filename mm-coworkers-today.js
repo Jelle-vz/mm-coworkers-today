@@ -1,9 +1,9 @@
 /* global Module */
 
-/* Magic Mirror
- * Module: HelloWorld
+/* Mirror.online
+ * Module: What are we working on today
  *
- * By Michael Teeuw http://michaelteeuw.nl
+ * By Team wvz.online http://www.wvz.online
  * MIT Licensed.
  */
 
